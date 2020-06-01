@@ -10,12 +10,28 @@ public class Main {
         // write your code here
         Field game = new Field(Input.askInput("Enter cells: ").toUpperCase());
         game.printField();
-        game.printStatus();
+        Coordinates point;
+        do {
+            point = Input.askCoordinates("Enter the coordinates: ");
+            if (point == null) {
+                System.out.println("You should enter numbers!");
+            } else if (point.getX() < 0 || 3 < point.getX() || point.getY() < 0 || 3 < point.getY()) {
+                System.out.println("Coordinates should be from 1 to 3!");
+                point = null;
+            } else if (!game.placeNext(point)) {
+                System.out.println("This cell is occupied! Choose another one!");
+                point = null;
+            }
+        } while (point == null);
+
+        game.printField();
+//        game.printStatus();
     }
 }
 
 class Input {
     private static final Scanner scanner;
+
     static {
         scanner = new Scanner(System.in);
     }
@@ -30,14 +46,21 @@ class Input {
     }
 
     public static Coordinates askCoordinates(String question) {
-        System.out.println(question);
-        try {
-            int x = scanner.nextInt();
-            int y = scanner.nextInt();
-            return new Coordinates(x, y);
-        } catch (Exception e) {
+        ask(question);
+        int x, y;
+        if (scanner.hasNextInt()) {
+            x = scanner.nextInt();
+        } else {
+            scanner.nextLine();
             return null;
         }
+        if (scanner.hasNextInt()) {
+            y = scanner.nextInt();
+        } else {
+            scanner.nextLine();
+            return null;
+        }
+        return new Coordinates(x, y);
     }
 }
 
@@ -124,7 +147,7 @@ class Field {
         }
     }
 
-    public enum Piece {
+    private enum Piece {
         X("X"), O("O"), E("_"), D("D");
 
         private final String value;
@@ -149,8 +172,12 @@ class Field {
         }
     }
 
-    public Field(String input) {
+    public Field() {
         initMap();
+    }
+
+    public Field(String input) {
+        this();
         int x;
         int y;
         int count = 0;
@@ -172,13 +199,27 @@ class Field {
     }
 
     private void place(int x, int y, Piece piece) {
-        map.put(new Coordinates(x, y), piece);
+        place(new Coordinates(x, y), piece);
+    }
+
+    private void place(Coordinates coordinates, Piece piece) {
+        map.put(coordinates, piece);
         piece.place();
     }
 
     private void placePiece(int x, int y, Piece piece) {
-        place(x, y, piece);
+        placePiece(new Coordinates(x, y), piece);
+    }
+
+    private void placePiece(Coordinates coordinates, Piece piece) {
+        place(coordinates, piece);
         Piece.E.remove();
+        validateStreaks(coordinates, piece);
+    }
+
+    private void validateStreaks(Coordinates coordinates, Piece piece) {
+        int x = coordinates.getX();
+        int y = coordinates.getY();
         rows.get(x).put(piece);
         cols.get(y).put(piece);
         if (x == 1 && y == 1 || x == 2 && y == 2 || x == 3 && y == 3) {
@@ -189,8 +230,26 @@ class Field {
         }
     }
 
+    public boolean placeNext(Coordinates point) {
+        Coordinates coordinates = convertPoint(point);
+        if (!getPiece(coordinates).equals(Piece.E)) {
+            return false;
+        }
+        // TODO modify to take turns
+        placePiece(coordinates, Piece.X);
+        return true;
+    }
+
+    private static Coordinates convertPoint(Coordinates point) {
+        return new Coordinates(4 - point.getY(), point.getX());
+    }
+
     private Piece getPiece(int x, int y) {
-        return map.get(new Coordinates(x, y));
+        return getPiece(new Coordinates(x, y));
+    }
+
+    private Piece getPiece(Coordinates coordinates) {
+        return map.get(coordinates);
     }
 
     private void initMap() {
@@ -244,9 +303,9 @@ class Field {
 
     public void printField() {
         line();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 1; i <= 3; i++) {
             left();
-            for (int j = 0; j < 3; j++) {
+            for (int j = 1; j <= 3; j++) {
                 System.out.print(getPiece(i, j) + " ");
             }
             right();
