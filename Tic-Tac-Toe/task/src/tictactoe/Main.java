@@ -8,7 +8,7 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         // write your code here
-        Field game = new Field(Input.ask("Enter cells: ").toUpperCase());
+        Field game = new Field(Input.askInput("Enter cells: ").toUpperCase());
         game.printField();
         game.printStatus();
     }
@@ -19,15 +19,67 @@ class Input {
     static {
         scanner = new Scanner(System.in);
     }
-    public static String ask(String question) {
+
+    private static void ask(String question) {
         System.out.print(question);
+    }
+
+    public static String askInput(String question) {
+        ask(question);
         return scanner.nextLine();
+    }
+
+    public static Coordinates askCoordinates(String question) {
+        System.out.println(question);
+        try {
+            int x = scanner.nextInt();
+            int y = scanner.nextInt();
+            return new Coordinates(x, y);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+}
+
+class Coordinates {
+    private final int x;
+    private final int y;
+
+    public Coordinates(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Coordinates that = (Coordinates) o;
+
+        if (x != that.x) return false;
+        return y == that.y;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = x;
+        result = 31 * result + y;
+        return result;
     }
 }
 
 class Field {
-    private Piece[][] map;
-    private final HashMap<Integer, Streak> rows = new HashMap<>();
+    private final Map<Coordinates, Piece> map = new HashMap<>();
+    private final Map<Integer, Streak> rows = new HashMap<>();
     private final Map<Integer, Streak> cols = new HashMap<>();
     private final Map<Integer, Streak> diag = new HashMap<>();
     private Status status = Status.NOT_FINISHED;
@@ -72,7 +124,7 @@ class Field {
         }
     }
 
-    private enum Piece {
+    public enum Piece {
         X("X"), O("O"), E("_"), D("D");
 
         private final String value;
@@ -103,8 +155,8 @@ class Field {
         int y;
         int count = 0;
         while (count < input.length() && count < 9) {
-            x = count / 3;
-            y = count % 3;
+            x = count / 3 + 1;
+            y = count % 3 + 1;
             char c = input.charAt(count);
             count++;
             switch (c) {
@@ -120,7 +172,7 @@ class Field {
     }
 
     private void place(int x, int y, Piece piece) {
-        map[x][y] = piece;
+        map.put(new Coordinates(x, y), piece);
         piece.place();
     }
 
@@ -129,20 +181,23 @@ class Field {
         Piece.E.remove();
         rows.get(x).put(piece);
         cols.get(y).put(piece);
-        if (x == 0 && y == 0 || x == 1 && y == 1 || x == 2 && y == 2) {
+        if (x == 1 && y == 1 || x == 2 && y == 2 || x == 3 && y == 3) {
             diag.get(0).put(piece);
         }
-        if (x == 0 && y == 2 || x == 1 && y == 1 || x == 2 && y == 0) {
+        if (x == 1 && y == 3 || x == 2 && y == 2 || x == 3 && y == 1) {
             diag.get(1).put(piece);
         }
     }
 
+    private Piece getPiece(int x, int y) {
+        return map.get(new Coordinates(x, y));
+    }
+
     private void initMap() {
-        map = new Piece[3][3];
-        for (int i = 0; i < 3; i++) {
+        for (int i = 1; i <= 3; i++) {
             rows.put(i, new Streak());
             cols.put(i, new Streak());
-            for (int j = 0; j < 3; j++) {
+            for (int j = 1; j <= 3; j++) {
                 place(i, j, Piece.E);
             }
         }
@@ -192,7 +247,7 @@ class Field {
         for (int i = 0; i < 3; i++) {
             left();
             for (int j = 0; j < 3; j++) {
-                System.out.print(map[i][j] + " ");
+                System.out.print(getPiece(i, j) + " ");
             }
             right();
         }
