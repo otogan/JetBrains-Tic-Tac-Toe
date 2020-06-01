@@ -2,6 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Problems/Find integer values of Log levels/Problems-Find_integer_values_of_Log_levels.iml" filepath="$PROJECT_DIR$/.idea/modules/Problems/Find integer values of Log levels/Problems-Find_integer_values_of_Log_levels.iml" group="Tic-Tac-Toe/Problems-Find_integer_values_of_Log_levels" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Problems/Find integer values of Log levels/Problems-Find_integer_values_of_Log_levels_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Problems/Find integer values of Log levels/Problems-Find_integer_values_of_Log_levels_main.iml" group="Tic-Tac-Toe/Problems-Find_integer_values_of_Log_levels" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/Problems/Find integer values of Log levels/Problems-Find_integer_values_of_Log_levels_test.iml" filepath="$PROJECT_DIR$/.idea/modules/Problems/Find integer values of Log levels/Problems-Find_integer_values_of_Log_levels_test.iml" group="Tic-Tac-Toe/Problems-Find_integer_values_of_Log_levels" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Tic-Tac-Toe.iml" filepath="$PROJECT_DIR$/.idea/modules/Tic-Tac-Toe.iml" group="Tic-Tac-Toe" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Tic-Tac-Toe/task/Tic-Tac-Toe-task.iml" filepath="$PROJECT_DIR$/.idea/modules/Tic-Tac-Toe/task/Tic-Tac-Toe-task.iml" group="Tic-Tac-Toe/Tic-Tac-Toe-task" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/Tic-Tac-Toe/task/Tic-Tac-Toe-task_main.iml" filepath="$PROJECT_DIR$/.idea/modules/Tic-Tac-Toe/task/Tic-Tac-Toe-task_main.iml" group="Tic-Tac-Toe/Tic-Tac-Toe-task" />
