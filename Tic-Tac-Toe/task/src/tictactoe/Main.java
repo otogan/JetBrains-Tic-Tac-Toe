@@ -8,24 +8,25 @@ import java.util.Scanner;
 public class Main {
     public static void main(String[] args) {
         // write your code here
-        Field game = new Field(Input.askInput("Enter cells: ").toUpperCase());
+        Game game = new Game();
         game.printField();
-        Coordinates point;
         do {
-            point = Input.askCoordinates("Enter the coordinates: ");
-            if (point == null) {
-                System.out.println("You should enter numbers!");
-            } else if (point.getX() < 0 || 3 < point.getX() || point.getY() < 0 || 3 < point.getY()) {
-                System.out.println("Coordinates should be from 1 to 3!");
-                point = null;
-            } else if (!game.placeNext(point)) {
-                System.out.println("This cell is occupied! Choose another one!");
-                point = null;
-            }
-        } while (point == null);
-
-        game.printField();
-//        game.printStatus();
+            Coordinates point;
+            do {
+                point = Input.askCoordinates("Enter the coordinates: ");
+                if (point == null) {
+                    System.out.println("You should enter numbers!");
+                } else if (point.getX() < 0 || 3 < point.getX() || point.getY() < 0 || 3 < point.getY()) {
+                    System.out.println("Coordinates should be from 1 to 3!");
+                    point = null;
+                } else if (!game.placeNext(point)) {
+                    System.out.println("This cell is occupied! Choose another one!");
+                    point = null;
+                }
+            } while (point == null);
+            game.printField();
+        } while (game.getStatus().equals(Game.Status.NOT_FINISHED));
+        game.printStatus();
     }
 }
 
@@ -100,7 +101,8 @@ class Coordinates {
     }
 }
 
-class Field {
+class Game {
+    private Piece nextPiece;
     private final Map<Coordinates, Piece> map = new HashMap<>();
     private final Map<Integer, Streak> rows = new HashMap<>();
     private final Map<Integer, Streak> cols = new HashMap<>();
@@ -128,7 +130,7 @@ class Field {
         }
     }
 
-    private enum Status {
+    public enum Status {
         NOT_FINISHED("Game not finished"),
         DRAW("Draw"),
         X_WINS("X wins"),
@@ -148,7 +150,7 @@ class Field {
     }
 
     private enum Piece {
-        X("X"), O("O"), E("_"), D("D");
+        X("X"), O("O"), E(" "), D("D");
 
         private final String value;
         private int count = 0;
@@ -172,11 +174,12 @@ class Field {
         }
     }
 
-    public Field() {
+    public Game() {
+        this.nextPiece = Piece.X;
         initMap();
     }
 
-    public Field(String input) {
+    public Game(String input) {
         this();
         int x;
         int y;
@@ -196,6 +199,10 @@ class Field {
             }
         }
         analyze();
+    }
+
+    public Status getStatus() {
+        return status;
     }
 
     private void place(int x, int y, Piece piece) {
@@ -235,8 +242,9 @@ class Field {
         if (!getPiece(coordinates).equals(Piece.E)) {
             return false;
         }
-        // TODO modify to take turns
-        placePiece(coordinates, Piece.X);
+        placePiece(coordinates, nextPiece);
+        analyze();
+        nextPiece = nextPiece.equals(Piece.X) ? Piece.O : Piece.X;
         return true;
     }
 
